@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/harshitsharma/**)",
+      "Bash(unzip -q \"/Users/harshitsharma/Downloads/MoneyMentor.zip\" -d \"/Users/harshitsharma/MoneyMentor - Major Project/\")",
+      "Bash(pip install *)",
+      "Bash(pip3 install *)",
+      "Bash(python3 -c \"import groq; import google.genai; print\\('groq OK, google-genai OK'\\)\")",
+      "Bash(python3 -m uvicorn main:app --reload --port 8000)",
+      "Bash(curl -s http://localhost:8000/health)",
+      "Bash(curl -s http://localhost:8000/)",
+      "Bash(npm install *)",
+      "Bash(brew list *)",
+      "Bash(brew install *)",
+      "Bash(curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh)",
+      "Bash(bash)",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "Bash(curl -s http://localhost:8000/docs)",
+      "Bash(curl -s http://localhost:8000/openapi.json)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(m.upper\\(\\), p\\) for p,ops in d['paths'].items\\(\\) for m in ops]\")",
+      "Bash(npm run *)",
+      "Bash(python3 -m uvicorn --version)",
+      "Bash(pip3 show *)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(kill 45842 49470)",
+      "Bash(xargs kill *)",
+      "Bash(git -C \"/Users/harshitsharma/MoneyMentor - Major Project\" status)",
+      "Bash(git init *)",
+      "Bash(git add *)"
+    ]
+  }
+}

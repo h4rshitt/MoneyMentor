@@ -1,0 +1,19 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Frontend (Vite / React)",
+      "runtimeExecutable": "/Users/harshitsharma/.nvm/versions/node/v20.20.2/bin/node",
+      "runtimeArgs": ["node_modules/.bin/vite"],
+      "port": 5173,
+      "cwd": "MoneyMentor/frontend"
+    },
+    {
+      "name": "Backend (FastAPI / uvicorn)",
+      "runtimeExecutable": "/usr/bin/python3",
+      "runtimeArgs": ["-m", "uvicorn", "main:app", "--reload", "--port", "8000"],
+      "port": 8000,
+      "cwd": "MoneyMentor/backend"
+    }
+  ]
+}
