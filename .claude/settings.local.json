@@ -30,7 +30,8 @@
       "Bash(git commit -m ' *)",
       "mcp__mcp-registry__search_mcp_registry",
       "mcp__mcp-registry__list_connectors",
-      "Bash(git remote *)"
+      "Bash(git remote *)",
+      "Bash(git push *)"
     ]
   }
 }
