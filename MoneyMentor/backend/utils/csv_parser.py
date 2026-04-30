@@ -1,9 +1,9 @@
-import pandas as pd
+import csv
 import io
+from datetime import datetime
 from typing import List, Dict
 
 CATEGORY_RULES: List[tuple] = [
-    ("Income", []),  # handled by sign check
     ("Food & Dining", [
         "restaurant", "cafe", "coffee", "starbucks", "mcdonalds", "mcdonald",
         "subway", "pizza", "doordash", "uber eats", "ubereats", "swiggy",
@@ -56,41 +56,74 @@ def categorise(description: str, amount: float) -> str:
         return "Income"
     desc = description.lower()
     for category, keywords in CATEGORY_RULES:
-        if category == "Income":
-            continue
         for kw in keywords:
             if kw in desc:
                 return category
     return "Other"
 
 
-def parse_csv(content: bytes, user_id: int) -> List[Dict]:
-    try:
-        df = pd.read_csv(io.BytesIO(content))
-    except Exception as e:
-        raise ValueError(f"Could not parse CSV: {str(e)}")
+def _parse_date(date_str: str) -> str:
+    """Try multiple date formats and return YYYY-MM-DD string."""
+    formats = [
+        "%Y-%m-%d", "%d/%m/%Y", "%m/%d/%Y", "%d-%m-%Y", "%m-%d-%Y",
+        "%d %b %Y", "%d %B %Y", "%b %d, %Y", "%B %d, %Y",
+        "%Y/%m/%d", "%d/%m/%y", "%m/%d/%y",
+    ]
+    date_str = date_str.strip()
+    for fmt in formats:
+        try:
+            return datetime.strptime(date_str, fmt).strftime("%Y-%m-%d")
+        except ValueError:
+            continue
+    raise ValueError(f"Unrecognised date format: {date_str!r}")
 
-    df.columns = [c.strip().lower() for c in df.columns]
+
+def parse_csv(content: bytes, user_id: int) -> List[Dict]:
+    text = content.decode("utf-8-sig", errors="replace")  # handle BOM
+    reader = csv.DictReader(io.StringIO(text))
+
+    # Normalise column names
+    if reader.fieldnames is None:
+        raise ValueError("CSV appears to be empty.")
+    norm = {f.strip().lower(): f for f in reader.fieldnames}
 
     required = {"date", "description", "amount"}
-    if not required.issubset(set(df.columns)):
-        raise ValueError(f"CSV must contain columns: Date, Description, Amount. Got: {list(df.columns)}")
+    if not required.issubset(norm.keys()):
+        raise ValueError(
+            f"CSV must contain columns: Date, Description, Amount. Got: {list(norm.keys())}"
+        )
 
-    df = df.dropna(subset=["date", "description", "amount"])
-    df["description"] = df["description"].astype(str).str.strip()
-    df["amount"] = pd.to_numeric(df["amount"], errors="coerce").fillna(0)
-
-    df["date"] = pd.to_datetime(df["date"], infer_datetime_format=True, errors="coerce")
-    df = df.dropna(subset=["date"])
-    df["date"] = df["date"].dt.strftime("%Y-%m-%d")
+    date_col   = norm["date"]
+    desc_col   = norm["description"]
+    amount_col = norm["amount"]
 
     transactions = []
-    for _, row in df.iterrows():
+    for row in reader:
+        raw_date   = (row.get(date_col)   or "").strip()
+        raw_desc   = (row.get(desc_col)   or "").strip()
+        raw_amount = (row.get(amount_col) or "").strip()
+
+        if not raw_date or not raw_desc or not raw_amount:
+            continue
+
+        try:
+            date_str = _parse_date(raw_date)
+        except ValueError:
+            continue
+
+        try:
+            # Strip currency symbols / commas before parsing
+            clean = raw_amount.replace(",", "").replace("₹", "").replace("$", "").strip()
+            amount = float(clean)
+        except ValueError:
+            continue
+
         transactions.append({
-            "user_id": user_id,
-            "date": row["date"],
-            "description": row["description"],
-            "amount": float(row["amount"]),
-            "category": categorise(row["description"], float(row["amount"])),
+            "user_id":     user_id,
+            "date":        date_str,
+            "description": raw_desc,
+            "amount":      amount,
+            "category":    categorise(raw_desc, amount),
         })
+
     return transactions
