@@ -5,7 +5,7 @@ import { signup as signupAPI } from '../api/client';
 import { Eye, EyeOff, ArrowRight, TrendingUp, CheckCircle2, Sparkles } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-const BACKEND_URL = 'http://localhost:8000';
+const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 const FEATURES = [
   'Automatic subscription detection from any CSV',

@@ -5,7 +5,7 @@ import { login as loginAPI } from '../api/client';
 import { Eye, EyeOff, ArrowRight, TrendingUp, Shield, Zap, LineChart } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-const BACKEND_URL = 'http://localhost:8000';
+const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 function GoogleIcon() {
   return (
