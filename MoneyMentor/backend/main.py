@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import create_tables
-from routers import auth, transactions, subscriptions, goals, ai, oauth, files, reports
+from routers import auth, transactions, subscriptions, goals, ai, oauth, files, reports, admin
 
 
 @asynccontextmanager
@@ -44,6 +44,7 @@ app.include_router(ai.router)
 app.include_router(oauth.router)
 app.include_router(files.router)
 app.include_router(reports.router)
+app.include_router(admin.router)
 
 
 @app.get("/")
