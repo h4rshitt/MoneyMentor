@@ -2,9 +2,21 @@ from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime, 
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from datetime import datetime
+import os
 
-DATABASE_URL = "sqlite:///./moneymentor.db"
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+# Railway injects DATABASE_URL automatically when PostgreSQL plugin is added.
+# Falls back to local SQLite for development.
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./moneymentor.db")
+
+# SQLAlchemy requires postgresql:// not postgres:// (Railway uses the old format)
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
+# SQLite needs check_same_thread=False; PostgreSQL doesn't accept it
+if DATABASE_URL.startswith("sqlite"):
+    engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+else:
+    engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
@@ -67,11 +79,13 @@ def get_db():
 
 def create_tables():
     Base.metadata.create_all(bind=engine)
-    # Safe migration: add file_id column to existing transactions table
-    from sqlalchemy import text, inspect
-    inspector = inspect(engine)
-    cols = [c["name"] for c in inspector.get_columns("transactions")]
-    with engine.connect() as conn:
-        if "file_id" not in cols:
-            conn.execute(text("ALTER TABLE transactions ADD COLUMN file_id INTEGER REFERENCES uploaded_files(id)"))
-            conn.commit()
+    # Safe migration: add file_id column to existing transactions table (SQLite only)
+    # PostgreSQL: SQLAlchemy's create_all handles schema via models above
+    if DATABASE_URL.startswith("sqlite"):
+        from sqlalchemy import text, inspect
+        inspector = inspect(engine)
+        cols = [c["name"] for c in inspector.get_columns("transactions")]
+        with engine.connect() as conn:
+            if "file_id" not in cols:
+                conn.execute(text("ALTER TABLE transactions ADD COLUMN file_id INTEGER REFERENCES uploaded_files(id)"))
+                conn.commit()

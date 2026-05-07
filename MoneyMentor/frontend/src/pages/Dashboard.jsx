@@ -5,7 +5,6 @@ import {
   TrendingUp, CreditCard, Moon, Sun, LogOut,
   RefreshCw, FolderOpen, Wallet, PieChart, BarChart2,
   Target, Sparkles, Menu, X,
-  DollarSign, IndianRupee,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import * as api from '../api/client';
@@ -32,7 +31,6 @@ export default function Dashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [darkMode, setDarkMode]   = useState(() => localStorage.getItem('mm_dark') === 'true');
-  const [currency, setCurrency]   = useState(() => localStorage.getItem('mm_currency') || '$');
   const [tab, setTab]             = useState('overview');
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -50,12 +48,6 @@ export default function Dashboard() {
     document.documentElement.classList.toggle('dark', darkMode);
     localStorage.setItem('mm_dark', darkMode);
   }, [darkMode]);
-
-  const toggleCurrency = () => {
-    const next = currency === '$' ? '₹' : '$';
-    setCurrency(next);
-    localStorage.setItem('mm_currency', next);
-  };
 
   const loadAll = async (fileId) => {
     setLoading(true);
@@ -194,13 +186,6 @@ export default function Dashboard() {
           </div>
 
           <div className="flex items-center gap-1">
-            <button onClick={toggleCurrency}
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-zinc-100 dark:bg-white/[0.06] text-[12px] font-semibold text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-white/[0.10] transition-all border border-zinc-200 dark:border-white/[0.08] font-mono">
-              {currency === '$'
-                ? <><DollarSign className="w-3 h-3" />USD</>
-                : <><IndianRupee className="w-3 h-3" />INR</>}
-            </button>
-
             <button onClick={() => loadAll(activeFileId)} className="btn-ghost p-2" title="Refresh">
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-brand-500' : ''}`} />
             </button>
@@ -218,8 +203,7 @@ export default function Dashboard() {
             <OverviewPanel
               summary={summary}
               subscriptions={subscriptions}
-              currency={currency}
-              activeFileId={activeFileId}
+                            activeFileId={activeFileId}
               categoryData={categoryData}
               onNavigate={setTab}
               onNegotiate={setNegotiateTarget}
@@ -257,7 +241,7 @@ export default function Dashboard() {
                   <p className="text-[11px] text-zinc-400">All transactions from your uploaded file</p>
                 </div>
               </div>
-              <TransactionPanel transactions={transactions} currency={currency} />
+              <TransactionPanel transactions={transactions} />
             </div>
           )}
 
@@ -265,20 +249,19 @@ export default function Dashboard() {
             <SubscriptionsPanel
               summary={summary}
               subscriptions={subscriptions}
-              currency={currency}
-              onNegotiate={setNegotiateTarget}
+                            onNegotiate={setNegotiateTarget}
             />
           )}
 
           {tab === 'goals' && (
             <div className="card animate-fade-in max-w-3xl">
-              <GoalsPanel goals={goals} onGoalsChange={async () => { const r = await api.listGoals(); setGoals(r.data); }} activeFileId={activeFileId} currency={currency} />
+              <GoalsPanel goals={goals} onGoalsChange={async () => { const r = await api.listGoals(); setGoals(r.data); }} activeFileId={activeFileId} />
             </div>
           )}
 
           {tab === 'reports' && (
             <div className="animate-fade-in">
-              <ReportsPanel activeFileId={activeFileId} currency={currency} />
+              <ReportsPanel activeFileId={activeFileId} />
             </div>
           )}
 
@@ -294,7 +277,7 @@ export default function Dashboard() {
                     <p className="text-[11px] text-zinc-400">AI-generated script to lower your monthly bills</p>
                   </div>
                 </div>
-                <BillNegotiator isModal={false} currency={currency} />
+                <BillNegotiator isModal={false} />
               </div>
 
               {subscriptions.length > 0 && (
@@ -306,7 +289,7 @@ export default function Dashboard() {
                         className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-50 dark:bg-white/[0.04] rounded-lg text-[12px] font-medium text-zinc-700 dark:text-zinc-300 hover:bg-brand-50 dark:hover:bg-brand-950/20 hover:text-brand-700 dark:hover:text-brand-300 border border-zinc-200 dark:border-white/[0.06] transition-all">
                         <span>{s.icon}</span>
                         <span>{s.name.split(' ')[0]}</span>
-                        <span className="text-zinc-400 font-mono text-[11px]">{fmt(s.monthly_cost, currency)}</span>
+                        <span className="text-zinc-400 font-mono text-[11px]">{fmt(s.monthly_cost)}</span>
                       </button>
                     ))}
                   </div>
@@ -322,8 +305,7 @@ export default function Dashboard() {
           isModal={true}
           prefill={negotiateTarget}
           onClose={() => setNegotiateTarget(null)}
-          currency={currency}
-        />
+                  />
       )}
     </div>
   );

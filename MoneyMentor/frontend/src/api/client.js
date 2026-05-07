@@ -65,10 +65,10 @@ export const getCategoryReport = (fileId) =>
 // AI
 export const getAIStatus = () => client.get('/ai/status');
 export const generateNegotiationScript = (data) => client.post('/ai/negotiate', data);
-export const getSpendingInsights = (fileId, currency) =>
+export const getSpendingInsights = (fileId) =>
   client.get('/ai/insights', {
     params: {
       ...(fileId ? { file_id: fileId } : {}),
-      currency_symbol: currency === '₹' ? '₹' : '$',
+      currency_symbol: '₹',
     },
   });

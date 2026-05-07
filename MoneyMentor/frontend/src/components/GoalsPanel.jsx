@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import * as api from '../api/client';
 import { fmt } from './shared';
 
-function GoalCard({ goal, result, currency, onDelete }) {
+function GoalCard({ goal, result, onDelete }) {
   const hasResult  = !!result;
   const delayInf   = result && result.delay_months >= 9999;
   const delayMonths = result ? result.delay_months : 0;
@@ -20,8 +20,8 @@ function GoalCard({ goal, result, currency, onDelete }) {
           <div>
             <p className="font-semibold text-zinc-900 dark:text-white text-[13px]">{goal.name}</p>
             <p className="text-[11px] text-zinc-400 font-mono mt-0.5">
-              Target <span className="text-zinc-600 dark:text-zinc-300">{fmt(goal.goal_amount, currency)}</span>
-              {' · '}saving <span className="text-zinc-600 dark:text-zinc-300">{fmt(goal.monthly_savings, currency)}/mo</span>
+              Target <span className="text-zinc-600 dark:text-zinc-300">{fmt(goal.goal_amount)}</span>
+              {' · '}saving <span className="text-zinc-600 dark:text-zinc-300">{fmt(goal.monthly_savings)}/mo</span>
             </p>
           </div>
         </div>
@@ -49,7 +49,7 @@ function GoalCard({ goal, result, currency, onDelete }) {
               <div className="flex flex-col items-center gap-0.5">
                 <ArrowRight className="w-3.5 h-3.5 text-zinc-300" />
                 <span className="text-[9px] text-zinc-400 font-mono whitespace-nowrap">subs cost</span>
-                <span className="text-[10px] font-semibold font-mono text-amber-600">{fmt(result.total_sub, currency)}/mo</span>
+                <span className="text-[10px] font-semibold font-mono text-amber-600">{fmt(result.total_sub)}/mo</span>
               </div>
             </div>
 
@@ -96,7 +96,7 @@ function GoalCard({ goal, result, currency, onDelete }) {
   );
 }
 
-export default function GoalsPanel({ goals, onGoalsChange, activeFileId, currency }) {
+export default function GoalsPanel({ goals, onGoalsChange, activeFileId }) {
   const [form, setForm]       = useState({ name: '', goal_amount: '', monthly_savings: '' });
   const [simResults, setSim]  = useState({});
   const [simulating, setSiming] = useState(false);
@@ -191,13 +191,13 @@ export default function GoalsPanel({ goals, onGoalsChange, activeFileId, currenc
                 className="input-field" placeholder="Emergency Fund" required />
             </div>
             <div>
-              <label className="section-label block mb-1.5">Target Amount ({currency})</label>
+              <label className="section-label block mb-1.5">Target Amount (₹)</label>
               <input type="number" value={form.goal_amount}
                 onChange={e => setForm({...form, goal_amount: e.target.value})}
                 className="input-field" placeholder="10000" required min="1" />
             </div>
             <div>
-              <label className="section-label block mb-1.5">Monthly Savings ({currency})</label>
+              <label className="section-label block mb-1.5">Monthly Savings (₹)</label>
               <input type="number" value={form.monthly_savings}
                 onChange={e => setForm({...form, monthly_savings: e.target.value})}
                 className="input-field" placeholder="500" required min="1" />
@@ -233,7 +233,7 @@ export default function GoalsPanel({ goals, onGoalsChange, activeFileId, currenc
       ) : (
         <div className="space-y-4">
           {goals.map(g => (
-            <GoalCard key={g.id} goal={g} result={simResults[g.id]} currency={currency} onDelete={handleDelete} />
+            <GoalCard key={g.id} goal={g} result={simResults[g.id]} onDelete={handleDelete} />
           ))}
         </div>
       )}

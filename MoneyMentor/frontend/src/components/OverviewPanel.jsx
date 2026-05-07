@@ -88,7 +88,7 @@ function HealthGauge({ score, label, color }) {
 }
 
 /* ── AI Insights card ─────────────────────────────────────────────────────── */
-function InsightsCard({ activeFileId, currency }) {
+function InsightsCard({ activeFileId }) {
   const [insights, setInsights] = useState([]);
   const [source, setSource]     = useState('');
   const [loading, setLoading]   = useState(false);
@@ -97,7 +97,7 @@ function InsightsCard({ activeFileId, currency }) {
   const load = async () => {
     setLoading(true);
     try {
-      const res = await api.getSpendingInsights(activeFileId, currency);
+      const res = await api.getSpendingInsights(activeFileId);
       setInsights(res.data.insights || []);
       setSource(res.data.source || '');
       setLoaded(true);
@@ -105,7 +105,7 @@ function InsightsCard({ activeFileId, currency }) {
     finally { setLoading(false); }
   };
 
-  useEffect(() => { setLoaded(false); setInsights([]); }, [activeFileId, currency]);
+  useEffect(() => { setLoaded(false); setInsights([]); }, [activeFileId]);
 
   return (
     <div className="card h-full flex flex-col">
@@ -158,18 +158,18 @@ function InsightsCard({ activeFileId, currency }) {
 }
 
 /* ── Custom chart tooltip ─────────────────────────────────────────────────── */
-const ChartTip = ({ active, payload, currency }) => {
+const ChartTip = ({ active, payload }) => {
   if (!active || !payload?.length) return null;
   return (
     <div className="bg-white dark:bg-[#1a1a1f] border border-zinc-200 dark:border-white/[0.08] rounded-lg px-3 py-2 shadow-sm text-[11px]">
       <p className="font-semibold text-zinc-900 dark:text-white">{payload[0].name}</p>
-      <p className="text-zinc-500 font-mono">{fmt(payload[0].value, currency)}</p>
+      <p className="text-zinc-500 font-mono">{fmt(payload[0].value)}</p>
     </div>
   );
 };
 
 /* ── Main panel ───────────────────────────────────────────────────────────── */
-export default function OverviewPanel({ summary, subscriptions, currency, activeFileId, onNavigate, onNegotiate, categoryData }) {
+export default function OverviewPanel({ summary, subscriptions, activeFileId, onNavigate, onNegotiate, categoryData }) {
   const pieData = subscriptions.map((s, i) => ({
     name: s.name, value: s.monthly_cost, color: SERVICE_COLORS[i % SERVICE_COLORS.length],
   }));
@@ -210,9 +210,9 @@ export default function OverviewPanel({ summary, subscriptions, currency, active
             <span className="section-label">Monthly</span>
           </div>
           <p className="text-[22px] font-semibold font-mono tabular-nums text-zinc-900 dark:text-white tracking-tight">
-            {fmt(summary.total_monthly_cost, currency)}
+            {fmt(summary.total_monthly_cost)}
           </p>
-          <p className="text-[11px] text-zinc-400 font-mono">{fmt(summary.annual_cost, currency)} / year</p>
+          <p className="text-[11px] text-zinc-400 font-mono">{fmt(summary.annual_cost)} / year</p>
         </div>
 
         {/* Active subs */}
@@ -238,7 +238,7 @@ export default function OverviewPanel({ summary, subscriptions, currency, active
             <span className="section-label">Est. Savings</span>
           </div>
           <p className="text-[22px] font-semibold font-mono tabular-nums text-zinc-900 dark:text-white tracking-tight">
-            {fmt(summary.annual_cost * 0.3, currency)}
+            {fmt(summary.annual_cost * 0.3)}
           </p>
           <p className="text-[11px] text-zinc-400">If you cut 30% of subs</p>
         </div>
@@ -260,7 +260,7 @@ export default function OverviewPanel({ summary, subscriptions, currency, active
                 labelLine={false} fontSize={10}>
                 {pieData.map((e, i) => <Cell key={i} fill={e.color} />)}
               </Pie>
-              <Tooltip content={(p) => <ChartTip {...p} currency={currency} />} />
+              <Tooltip content={(p) => <ChartTip {...p} />} />
             </PieChart>
           </ResponsiveContainer>
         </div>
@@ -275,7 +275,7 @@ export default function OverviewPanel({ summary, subscriptions, currency, active
                   labelLine={false} fontSize={10}>
                   {catPieData.map((e, i) => <Cell key={i} fill={e.color} />)}
                 </Pie>
-                <Tooltip content={(p) => <ChartTip {...p} currency={currency} />} />
+                <Tooltip content={(p) => <ChartTip {...p} />} />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -288,7 +288,7 @@ export default function OverviewPanel({ summary, subscriptions, currency, active
 
       {/* ── AI insights + top subs ── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <InsightsCard activeFileId={activeFileId} currency={currency} />
+        <InsightsCard activeFileId={activeFileId} />
         <div className="card">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-[12px] font-semibold text-zinc-900 dark:text-white">Top Subscriptions</h3>
@@ -297,7 +297,7 @@ export default function OverviewPanel({ summary, subscriptions, currency, active
               View all <ChevronRight className="w-3 h-3" />
             </button>
           </div>
-          <SubsTable subscriptions={subscriptions.slice(0, 4)} currency={currency} onNegotiate={onNegotiate} />
+          <SubsTable subscriptions={subscriptions.slice(0, 4)} onNegotiate={onNegotiate} />
         </div>
       </div>
     </div>

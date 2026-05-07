@@ -48,7 +48,7 @@ function HealthGauge({ score, label, color }) {
   );
 }
 
-export default function SubscriptionsPanel({ summary, subscriptions, currency, onNegotiate }) {
+export default function SubscriptionsPanel({ summary, subscriptions, onNegotiate }) {
   const color = summary.health_color || 'blue';
 
   return (
@@ -63,7 +63,7 @@ export default function SubscriptionsPanel({ summary, subscriptions, currency, o
             <span className="section-label">Monthly Total</span>
           </div>
           <p className="text-[26px] font-semibold font-mono tabular-nums text-zinc-900 dark:text-white tracking-tight">
-            {fmt(summary.total_monthly_cost, currency)}
+            {fmt(summary.total_monthly_cost)}
           </p>
         </div>
         <div className="card">
@@ -74,7 +74,7 @@ export default function SubscriptionsPanel({ summary, subscriptions, currency, o
             <span className="section-label">Annual Total</span>
           </div>
           <p className="text-[26px] font-semibold font-mono tabular-nums text-zinc-900 dark:text-white tracking-tight">
-            {fmt(summary.annual_cost, currency)}
+            {fmt(summary.annual_cost)}
           </p>
         </div>
         <div className="card">
@@ -100,7 +100,7 @@ export default function SubscriptionsPanel({ summary, subscriptions, currency, o
             <h2 className="text-[13px] font-semibold text-zinc-900 dark:text-white">Detected Subscriptions</h2>
             {subscriptions.length > 0 && <span className="badge-gray">{subscriptions.length}</span>}
           </div>
-          <SubsTable subscriptions={subscriptions} currency={currency} onNegotiate={onNegotiate} />
+          <SubsTable subscriptions={subscriptions} onNegotiate={onNegotiate} />
         </div>
       </div>
     </div>

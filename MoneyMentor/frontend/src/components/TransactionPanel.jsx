@@ -20,7 +20,7 @@ function CategoryBadge({ category }) {
   return <span className={cls}>{category || 'Other'}</span>;
 }
 
-export default function TransactionPanel({ transactions, currency }) {
+export default function TransactionPanel({ transactions }) {
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [amountFilter, setAmountFilter] = useState('All');
@@ -127,7 +127,7 @@ export default function TransactionPanel({ transactions, currency }) {
                   <td className="py-3 px-4 text-gray-800 dark:text-gray-200 max-w-xs truncate">{t.description}</td>
                   <td className="py-3 px-4"><CategoryBadge category={t.category} /></td>
                   <td className={`py-3 px-4 text-right font-semibold whitespace-nowrap tabular-nums ${t.amount < 0 ? 'text-rose-500' : 'text-emerald-500'}`}>
-                    {t.amount < 0 ? '−' : '+'}{fmt(Math.abs(t.amount), currency)}
+                    {t.amount < 0 ? '−' : '+'}{fmt(Math.abs(t.amount))}
                   </td>
                 </tr>
               ))}

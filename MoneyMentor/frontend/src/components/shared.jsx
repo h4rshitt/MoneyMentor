@@ -1,11 +1,6 @@
-// Shared currency formatting utility
-export const USD_TO_INR = 84;
-
-export function fmt(value, currency = '$') {
-  if (currency === '₹') {
-    return `₹${(value * USD_TO_INR).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
-  }
-  return `$${Number(value).toFixed(2)}`;
+// All amounts are stored natively in INR (Indian bank CSV source)
+export function fmt(value) {
+  return `₹${Number(value).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
 }
 
 // Service icon map

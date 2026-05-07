@@ -1,7 +1,7 @@
 import { CreditCard, Sparkles } from 'lucide-react';
 import { fmt } from './shared';
 
-export default function SubsTable({ subscriptions, currency, onNegotiate }) {
+export default function SubsTable({ subscriptions, onNegotiate }) {
   if (!subscriptions.length) return (
     <div className="text-center py-10 text-gray-400 dark:text-slate-500">
       <div className="w-12 h-12 bg-gray-100 dark:bg-surface-700 rounded-2xl mx-auto flex items-center justify-center mb-3">
@@ -34,7 +34,7 @@ export default function SubsTable({ subscriptions, currency, onNegotiate }) {
                   </div>
                 </div>
               </td>
-              <td className="py-3.5 px-2 font-bold text-gray-900 dark:text-white tabular-nums">{fmt(s.monthly_cost, currency)}</td>
+              <td className="py-3.5 px-2 font-bold text-gray-900 dark:text-white tabular-nums">{fmt(s.monthly_cost)}</td>
               <td className="py-3.5 px-2">
                 <span className="badge-blue">{s.frequency}</span>
               </td>

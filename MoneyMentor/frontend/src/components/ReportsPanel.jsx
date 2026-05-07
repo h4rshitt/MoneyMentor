@@ -19,7 +19,7 @@ const CATEGORY_COLORS = {
   'Other':            '#94a3b8',
 };
 
-const ChartTooltip = ({ active, payload, label, currency }) => {
+const ChartTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
   return (
     <div className="bg-white dark:bg-surface-800 border border-gray-100 dark:border-white/[0.06] rounded-xl px-3 py-2 shadow-card text-xs space-y-1">
@@ -28,14 +28,14 @@ const ChartTooltip = ({ active, payload, label, currency }) => {
         <div key={i} className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: p.fill || p.color }} />
           <span className="text-gray-500">{p.name}:</span>
-          <span className="font-semibold text-gray-900 dark:text-white tabular-nums">{fmt(p.value, currency)}</span>
+          <span className="font-semibold text-gray-900 dark:text-white tabular-nums">{fmt(p.value)}</span>
         </div>
       ))}
     </div>
   );
 };
 
-export default function ReportsPanel({ activeFileId, currency }) {
+export default function ReportsPanel({ activeFileId }) {
   const [report, setReport] = useState(null);
   const [catReport, setCatReport] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -101,10 +101,10 @@ export default function ReportsPanel({ activeFileId, currency }) {
     }));
 
   const STAT_CARDS = [
-    { label: 'Total Spending',     value: fmt(summary.total_spending, currency),              icon: TrendingDown, gradient: 'bg-rose-gradient' },
-    { label: 'Total Income',       value: fmt(summary.total_income, currency),                icon: TrendingUp,   gradient: 'bg-emerald-gradient' },
-    { label: 'Net Savings',        value: fmt(Math.abs(summary.net_savings), currency),       icon: summary.net_savings >= 0 ? TrendingUp : TrendingDown, gradient: summary.net_savings >= 0 ? 'bg-brand-gradient' : 'bg-gold-gradient' },
-    { label: 'Avg Monthly Spend',  value: fmt(summary.avg_monthly_spend, currency),           icon: BarChart2,    gradient: 'bg-cyan-gradient' },
+    { label: 'Total Spending',     value: fmt(summary.total_spending),              icon: TrendingDown, gradient: 'bg-rose-gradient' },
+    { label: 'Total Income',       value: fmt(summary.total_income),                icon: TrendingUp,   gradient: 'bg-emerald-gradient' },
+    { label: 'Net Savings',        value: fmt(Math.abs(summary.net_savings)),       icon: summary.net_savings >= 0 ? TrendingUp : TrendingDown, gradient: summary.net_savings >= 0 ? 'bg-brand-gradient' : 'bg-gold-gradient' },
+    { label: 'Avg Monthly Spend',  value: fmt(summary.avg_monthly_spend),           icon: BarChart2,    gradient: 'bg-cyan-gradient' },
   ];
 
   return (
@@ -137,7 +137,7 @@ export default function ReportsPanel({ activeFileId, currency }) {
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(100,100,100,0.08)" />
               <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
-              <Tooltip content={(p) => <ChartTooltip {...p} currency={currency} />} />
+              <Tooltip content={(p) => <ChartTooltip {...p} />} />
               <Bar dataKey="Spending" fill="#ef4444" radius={[4, 4, 0, 0]} />
               <Bar dataKey="Net" fill="#7c3aed" radius={[4, 4, 0, 0]} />
             </BarChart>
@@ -153,7 +153,7 @@ export default function ReportsPanel({ activeFileId, currency }) {
                   label={({ name, pct }) => `${name.split(' ')[0]} ${pct}%`} labelLine={false} fontSize={11}>
                   {catPieData.map((e, i) => <Cell key={i} fill={e.color} />)}
                 </Pie>
-                <Tooltip content={(p) => <ChartTooltip {...p} currency={currency} />} />
+                <Tooltip content={(p) => <ChartTooltip {...p} />} />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -186,7 +186,7 @@ export default function ReportsPanel({ activeFileId, currency }) {
                         <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: c.color }} />
                         <span className="font-medium text-gray-800 dark:text-gray-200">{c.name}</span>
                       </td>
-                      <td className="py-3 px-3 font-semibold text-gray-900 dark:text-white tabular-nums">{fmt(c.value, currency)}</td>
+                      <td className="py-3 px-3 font-semibold text-gray-900 dark:text-white tabular-nums">{fmt(c.value)}</td>
                       <td className="py-3 px-3 text-gray-400 dark:text-slate-500 tabular-nums">{row?.count ?? '—'}</td>
                       <td className="py-3 px-3">
                         <div className="flex items-center gap-2.5">
@@ -221,9 +221,9 @@ export default function ReportsPanel({ activeFileId, currency }) {
               {months.map((m, i) => (
                 <tr key={i} className="hover:bg-gray-50 dark:hover:bg-surface-700/40 transition-colors">
                   <td className="py-3 px-3 font-medium text-gray-800 dark:text-gray-200">{m.month}</td>
-                  <td className="py-3 px-3 text-rose-500 font-semibold tabular-nums">{fmt(m.spending, currency)}</td>
-                  <td className="py-3 px-3 text-emerald-500 font-semibold tabular-nums">{m.income > 0 ? fmt(m.income, currency) : '—'}</td>
-                  <td className={`py-3 px-3 font-semibold tabular-nums ${m.net >= 0 ? 'text-brand-600 dark:text-brand-400' : 'text-amber-500'}`}>{fmt(Math.abs(m.net), currency)}</td>
+                  <td className="py-3 px-3 text-rose-500 font-semibold tabular-nums">{fmt(m.spending)}</td>
+                  <td className="py-3 px-3 text-emerald-500 font-semibold tabular-nums">{m.income > 0 ? fmt(m.income) : '—'}</td>
+                  <td className={`py-3 px-3 font-semibold tabular-nums ${m.net >= 0 ? 'text-brand-600 dark:text-brand-400' : 'text-amber-500'}`}>{fmt(Math.abs(m.net))}</td>
                   <td className="py-3 px-3 text-gray-400 dark:text-slate-500 tabular-nums">{m.transactions}</td>
                 </tr>
               ))}

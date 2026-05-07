@@ -3,7 +3,7 @@ import { Sparkles, Copy, CheckCheck, X, Key, Zap } from 'lucide-react';
 import toast from 'react-hot-toast';
 import * as api from '../api/client';
 
-export default function BillNegotiator({ prefill = null, isModal = false, onClose = null, currency }) {
+export default function BillNegotiator({ prefill = null, isModal = false, onClose = null }) {
   const [form, setForm] = useState({
     service_name: prefill?.name || '',
     current_price: prefill?.monthly_cost || '',
